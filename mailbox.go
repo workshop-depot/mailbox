@@ -76,6 +76,12 @@ func (mb *mailbox) loop() {
 	var actualReceive chan interface{}
 	var actualSend = mb.send
 	first := func() interface{} {
+		// this check is needed because (f* semantics)
+		// select statement first evaluates the arguments of it's case clauses
+		// then will ignore them if the channel is nil.
+		// I've got some "not constructive" responses on golang-nuts group, here:
+		// https://groups.google.com/forum/#!topic/golang-nuts/uKllRM89qb0
+		// :\ whatever ...
 		if mb.mails.Len() == 0 {
 			return nil
 		}
